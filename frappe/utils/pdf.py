@@ -7,6 +7,7 @@ import mimetypes
 import os
 import subprocess
 from urllib.parse import parse_qs, urlparse
+import re
 
 import cssutils
 import pdfkit
@@ -77,10 +78,14 @@ def pdf_footer_html(soup, head, content, styles, html_id, css, path=None):
 	return pdf_header_html(
 		soup=soup, head=head, content=content, styles=styles, html_id=html_id, css=css, path=path
 	)
+	
+def filter_url_all(text):
+	return re.sub(r"http://'(http://[^']+)'", r"\1", text)
 
 
 def get_pdf(html, options=None, output: PdfWriter | None = None):
 	html = scrub_urls(html)
+	html = filter_url_all(html)
 	html, options = prepare_options(html, options)
 
 	options.update({"disable-javascript": "", "disable-local-file-access": ""})
